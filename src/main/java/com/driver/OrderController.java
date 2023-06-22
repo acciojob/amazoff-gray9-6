@@ -19,34 +19,55 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("orders")
 public class OrderController {
 
+    @Autowired
+    OrderService orderService;
+
 
     @PostMapping("/add-order")
     public ResponseEntity<String> addOrder(@RequestBody Order order){
-
+        String orderAdd  = orderService.addOrder(order);
+        if(orderAdd == null){
+            return new ResponseEntity<>("Order is already added",HttpStatus.NOT_ACCEPTABLE);
+        }
         return new ResponseEntity<>("New order added successfully", HttpStatus.CREATED);
     }
 
     @PostMapping("/add-partner/{partnerId}")
     public ResponseEntity<String> addPartner(@PathVariable String partnerId){
-
-        return new ResponseEntity<>("New delivery partner added successfully", HttpStatus.CREATED);
+             String partnerAdd = orderService.addPartner(partnerId);
+             if(partnerAdd != null){
+                 return new ResponseEntity<>("New delivery partner added successfully", HttpStatus.CREATED);
+             }
+             return new ResponseEntity<>("Partner already added",HttpStatus.NOT_ACCEPTABLE);
     }
+
 
     @PutMapping("/add-order-partner-pair")
     public ResponseEntity<String> addOrderPartnerPair(@RequestParam String orderId, @RequestParam String partnerId){
 
         //This is basically assigning that order to that partnerId
-        return new ResponseEntity<>("New order-partner pair added successfully", HttpStatus.CREATED);
+        String orderAdded = orderService.addOrderPartnerPair(orderId,partnerId);
+        if(orderAdded != null){
+            return new ResponseEntity<>("New order-partner pair added successfully", HttpStatus.CREATED);
+
+        }
+        return new ResponseEntity<>("Not Sucessfull",HttpStatus.NOT_ACCEPTABLE);
     }
+
 
     @GetMapping("/get-order-by-id/{orderId}")
     public ResponseEntity<Order> getOrderById(@PathVariable String orderId){
 
         Order order= null;
         //order should be returned with an orderId.
+        order = orderService.getOrderById(orderId);
 
-        return new ResponseEntity<>(order, HttpStatus.CREATED);
+        if(order != null){
+            return new ResponseEntity<>(order, HttpStatus.CREATED);
+        }
+        return  new ResponseEntity<>(null,HttpStatus.NOT_FOUND);
     }
+
 
     @GetMapping("/get-partner-by-id/{partnerId}")
     public ResponseEntity<DeliveryPartner> getPartnerById(@PathVariable String partnerId){
@@ -54,9 +75,13 @@ public class OrderController {
         DeliveryPartner deliveryPartner = null;
 
         //deliveryPartner should contain the value given by partnerId
-
-        return new ResponseEntity<>(deliveryPartner, HttpStatus.CREATED);
+        deliveryPartner = orderService.getPartnerById(partnerId);
+        if(deliveryPartner != null){
+            return new ResponseEntity<>(deliveryPartner, HttpStatus.CREATED);
+        }
+        return  new ResponseEntity<>(null,HttpStatus.NOT_FOUND);
     }
+
 
     @GetMapping("/get-order-count-by-partner-id/{partnerId}")
     public ResponseEntity<Integer> getOrderCountByPartnerId(@PathVariable String partnerId){
