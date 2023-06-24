@@ -19,16 +19,35 @@ public class Order {
     public String getId() {
         return id;
     }
-
-    public int getDeliveryTime() {return deliveryTime;}
-
     public void setId(String id) {
         this.id = id;
     }
 
-    public void setDeliveryTime(int deliveryTime) {
-        this.deliveryTime = deliveryTime;
+    public int getDeliveryTime() {return deliveryTime;}
+
+    public static int getDeliverTimeInInt(String deliveryTime){
+        String[]time = deliveryTime.split(":");
+         int deliveryTime_In_Int = (Integer.parseInt(time[0])*60) + Integer.parseInt(time[1]);
+
+         return deliveryTime_In_Int;
     }
+    public static String getDeliveryTimeAsString(int time){
+        int hrs = time/60;
+        int mins = time % 60;
+        String hrString = "";
+        String minString = "";
+        if(hrs < 10) hrString = "0" + hrs;
+        else hrString = "" + hrs;
+
+        if(mins < 10) minString = "0" + mins;
+        else minString = "" + mins;
+
+        return hrString + ":" + minString;
+    }
+
+
+
+
 
     @Override
     public String toString(){
