@@ -28,9 +28,5 @@ public class DeliveryPartner {
         this.numberOfOrders = numberOfOrders;
     }
 
-    @Override
-    public String toString(){
-        return "Delivery partner_id :- " + this.id + "," + '\n' +
-                "Number of orders :- " + this.numberOfOrders;
-    }
+
 }

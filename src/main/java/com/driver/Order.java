@@ -45,15 +45,4 @@ public class Order {
         return hrString + ":" + minString;
     }
 
-
-
-
-
-    @Override
-    public String toString(){
-        return "Order{" +
-                "id='" + id + '\'' +
-                ", deliveryTime=" + deliveryTime +
-                '}';
-    }
 }
