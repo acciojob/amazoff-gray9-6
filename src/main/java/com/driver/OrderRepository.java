@@ -26,72 +26,60 @@ public class OrderRepository {
         this.partnertoOrderMap = partnertoOrderMap;
     }
 
-    public String addOrder(Order order) {
+    public void addOrder(Order order) {
         String id = order.getId();
         if(orderMap.containsKey(id) == false){
-            return orderMap.put(order.getId(),order) + "";
+            orderMap.put(order.getId(),order);
         }
-        return  null;
+
     }
 
-    public String addPartner(String partnerId) {
+    public void addPartner(String partnerId) {
         if(deliveryPartnerMap.containsKey(partnerId) == false){
-            return deliveryPartnerMap.put(partnerId,new DeliveryPartner(partnerId)) + " ";
+            deliveryPartnerMap.put(partnerId,new DeliveryPartner(partnerId));
         }
-        return  null;
-
     }
 
     public Order getOrderById(String orderId) {
-        if (orderMap.containsKey(orderId)){
             return  orderMap.get(orderId);
-        }
-        return null;
     }
 
     public DeliveryPartner getPartnerById(String partnerId) {
-        if(deliveryPartnerMap.containsKey(partnerId)){
             return deliveryPartnerMap.get(partnerId);
-        }
-        return  null;
     }
 
-    public String addOrderPartnerPair(String orderId, String partnerId) {
+    public void addOrderPartnerPair(String orderId, String partnerId) {
 
         // check orderid and partnerid should be present in databases;
-        if(orderMap.containsKey(orderId)== false || deliveryPartnerMap.containsKey(partnerId) == false){
-            return  null;
+        if(orderMap.containsKey(orderId)!= false || deliveryPartnerMap.containsKey(partnerId) != false){
+            // now update the partner - order map
+            // first get all the orders that this partner have ,, if does not have any order, then it will
+            // return new set,, and if it have the orderSet then it will return that, in either case we will add
+            // our order to that empty set or the existing order set
+            List<String> orders = partnertoOrderMap.getOrDefault(partnerId,new ArrayList<>());
+            orders.add(orderId);
+            partnertoOrderMap.put(partnerId,orders);
+
+            //update no of orders by the delivery Partner
+            DeliveryPartner deliveryPartner =deliveryPartnerMap.get(partnerId);
+            deliveryPartner.setNumberOfOrders(orders.size());
+
+            // check order pehle se hi kisi ko assign toh nahi hai
+            // and update the order - partner map
+            boolean order_id = orderPartnerMap.containsKey(orderId);
+            if(order_id == false){
+                orderPartnerMap.put(orderId,partnerId);
+            }
         }
 
-        // now update the partner - order map
-        // first get all the orders that this partner have ,, if does not have any order, then it will
-        // return new set,, and if it have the orderSet then it will return that, in either case we will add
-        // our order to that empty set or the existing order set
-        List<String> orders = partnertoOrderMap.getOrDefault(partnerId,new ArrayList<>());
-        orders.add(orderId);
-        partnertoOrderMap.put(partnerId,orders);
-
-        //update no of orders by the delivery Partner
-        DeliveryPartner deliveryPartner =deliveryPartnerMap.get(partnerId);
-        deliveryPartner.setNumberOfOrders(orders.size());
-
-        // check order pehle se hi kisi ko assign toh nahi hai
-        // and update the order - partner map
-         boolean order_id = orderPartnerMap.containsKey(orderId);
-        if(order_id == false){
-            orderPartnerMap.put(orderId,partnerId);
-            return "New order-partner pair added successfully";
-        }
-
-        return null;
     }
 
     public Integer getOrderCountByPartnerId(String partnerId) {
-         Integer count = 0;
+         Integer count = null;
 
         if(partnertoOrderMap.containsKey(partnerId)){
             List<String> list =  partnertoOrderMap.get(partnerId);
-           return list.size();
+           count = list.size();
         }
         return count;
 
@@ -122,16 +110,7 @@ public class OrderRepository {
 
     public Integer getCountOfUnassignedOrders() {
 
-        // getting the total orders
-        int totalOrder = getAllOrders().size();
-
-        // getting the assigned orders
-        int assignedOrder = orderPartnerMap.size();
-
-        // Total order - assigned order
-        int unassignedOrder = totalOrder - assignedOrder;
-
-        return unassignedOrder;
+        return  orderMap.size() - orderPartnerMap.size();
 
     }
 
@@ -162,18 +141,15 @@ public class OrderRepository {
     public void deletePartnerById(String partnerId) {
 
         // delete partner from deliver partner map
-       DeliveryPartner partner = getPartnerById(partnerId);
-        deliveryPartnerMap.remove(partner);
+        deliveryPartnerMap.remove(partnerId);
 
         // delete partner from order partner map
-        List<String> orders = getOrdersByPartnerId(partnerId);
+        List<String> orders = partnertoOrderMap.get(partnerId);
         for (String order : orders){
             orderPartnerMap.remove(order,partnerId);
         }
-
         // delete partner from partner to order
-        partnertoOrderMap.remove(partner);
-
+        partnertoOrderMap.remove(partnerId);
 
     }
 
@@ -189,18 +165,15 @@ public class OrderRepository {
         orderPartnerMap.remove(orderId);
 
         // remove it form partner order map
-          List<String> orderList = partnertoOrderMap.get(partner);
-          for(String order : orderList){
-              if(order.equals(orderId)){
-                  orderList.remove(order);
-              }
-          }
+          partnertoOrderMap.get(partner).remove(orderId);
 
           DeliveryPartner deliveryPartner = deliveryPartnerMap.get(partner);
-          deliveryPartner.setNumberOfOrders(orderList.size());
+          deliveryPartner.setNumberOfOrders(partnertoOrderMap.get(partner).size());
 
     }
 
 
 }
+
+
 
