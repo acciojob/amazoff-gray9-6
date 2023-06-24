@@ -26,10 +26,8 @@ public class Order {
     public int getDeliveryTime() {return deliveryTime;}
 
     public static int getDeliverTimeInInt(String deliveryTime){
-        String[]time = deliveryTime.split(":");
-         int deliveryTime_In_Int = (Integer.parseInt(time[0])*60) + Integer.parseInt(time[1]);
-
-         return deliveryTime_In_Int;
+        return (Integer.parseInt(deliveryTime.substring(0,2)) * 60 )+
+                Integer.parseInt(deliveryTime.substring(3) );
     }
     public static String getDeliveryTimeAsString(int time){
         int hrs = time/60;

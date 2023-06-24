@@ -26,18 +26,14 @@ public class OrderController {
     @PostMapping("/add-order")
     public ResponseEntity<String> addOrder(@RequestBody Order order){
         String orderAdd  = orderService.addOrder(order);
-        if(orderAdd == null){
-            return new ResponseEntity<>("Order is already added",HttpStatus.NOT_ACCEPTABLE);
-        }
+
         return new ResponseEntity<>("New order added successfully", HttpStatus.CREATED);
     }
 
     @PostMapping("/add-partner/{partnerId}")
     public ResponseEntity<String> addPartner(@PathVariable String partnerId){
              String partnerAdd = orderService.addPartner(partnerId);
-             if(partnerAdd != null){
-                 return new ResponseEntity<>("New delivery partner added successfully", HttpStatus.CREATED);
-             }
+
              return new ResponseEntity<>("Partner already added",HttpStatus.NOT_ACCEPTABLE);
     }
 
@@ -47,10 +43,7 @@ public class OrderController {
 
         //This is basically assigning that order to that partnerId
         String orderAdded = orderService.addOrderPartnerPair(orderId,partnerId);
-        if(orderAdded != null){
-            return new ResponseEntity<>("New order-partner pair added successfully", HttpStatus.CREATED);
 
-        }
         return new ResponseEntity<>("Not Added",HttpStatus.NOT_ACCEPTABLE);
     }
 
@@ -61,12 +54,8 @@ public class OrderController {
         Order order= null;
         //order should be returned with an orderId.
         order = orderService.getOrderById(orderId);
-
-        if(order != null){
             return new ResponseEntity<>(order, HttpStatus.CREATED);
-        }
-//        return  new ResponseEntity<>(null,HttpStatus.NOT_FOUND);
-        throw new RuntimeException("Not found");
+
     }
 
 
@@ -77,10 +66,9 @@ public class OrderController {
 
         //deliveryPartner should contain the value given by partnerId
         deliveryPartner = orderService.getPartnerById(partnerId);
-        if(deliveryPartner != null){
+
             return new ResponseEntity<>(deliveryPartner, HttpStatus.CREATED);
-        }
-        return  new ResponseEntity<>(null,HttpStatus.NOT_FOUND);
+
     }
 
 
