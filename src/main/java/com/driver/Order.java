@@ -5,30 +5,36 @@ public class Order {
     private String id;
     private int deliveryTime;
 
-    public Order() {
-    }
+
 
     public Order(String id, String deliveryTime) {
+
         // The deliveryTime has to converted from string to int and then stored in the attribute
         //deliveryTime  = HH*60 + MM
         this.id = id;
-        String[]time = deliveryTime.split(":");
-        this.deliveryTime = (Integer.parseInt(time[0])*60) + Integer.parseInt(time[1]);
+        String [] dt = deliveryTime.split(":");
+        this.deliveryTime = Integer.parseInt(dt[0])*60 + Integer.parseInt(dt[1]);
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public void setDeliveryTime(int deliveryTime) {
+        this.deliveryTime = deliveryTime;
     }
 
     public String getId() {
         return id;
     }
-    public void setId(String id) {
-        this.id = id;
-    }
 
     public int getDeliveryTime() {return deliveryTime;}
 
-    public static int getDeliverTimeInInt(String deliveryTime){
-        return (Integer.parseInt(deliveryTime.substring(0,2)) * 60 )+
-                Integer.parseInt(deliveryTime.substring(3) );
+    public static int getDeliveryTimeAsInt(String timeString){
+        return (Integer.parseInt(timeString.substring(0,2)) * 60 )+
+                Integer.parseInt(timeString.substring(3) );
     }
+
     public static String getDeliveryTimeAsString(int time){
         int hrs = time/60;
         int mins = time % 60;
@@ -42,5 +48,4 @@ public class Order {
 
         return hrString + ":" + minString;
     }
-
 }
